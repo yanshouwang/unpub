@@ -1,20 +1,26 @@
 services:
-  app:
+  server:
     build: .
     restart: always
     ports:
       - 4000:4000
     volumes:
-      - package_store:./unpub-packages
+      - package_store:/app/unpub-packages
     environment:
       - UNPUB_DB_HOST=db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
-    image: mongo:latest
+    image: mongo:4.4.26
     restart: always
     volumes:
       - meta_store:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
   meta_store:
   package_store:

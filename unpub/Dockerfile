@@ -8,6 +8,8 @@ RUN dart pub get
 
 # Copy app source code (except anything in .dockerignore) and AOT compile app.
 COPY . .
+# Ensure packages are still up-to-date if anything has changed
+RUN dart pub get --offline
 RUN dart compile exe bin/unpub.dart -o bin/unpub
 
 # Build minimal serving image from AOT-compiled `/unpub`
@@ -18,4 +20,4 @@ COPY --from=build /app/bin/unpub /app/bin/
 
 # Start unpub.
 EXPOSE 4000
-CMD ["/app/bin/unpub", "--database", "mongodb://$UNPUB_DB_HOST:27017/dart_pub"]
+CMD ["/app/bin/unpub"]
