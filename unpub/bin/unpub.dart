@@ -9,6 +9,8 @@ main(List<String> args) async {
   final dbHost = environment['UNPUB_DB_HOST'] ?? 'localhost';
   final dbPort = environment['UNPUB_DB_PORT'] ?? '27017';
   final upstream = environment['UNPUB_UPSTREAM'] ?? 'https://pub.dev';
+  final googleapisProxy = environment['UNPUB_GOOGLEAPIS_PROXY'];
+  final uploaderEmail = environment['UNPUB_UPLOADER_EMAIL'];
   var parser = ArgParser();
   parser.addOption('host', abbr: 'h', defaultsTo: '0.0.0.0');
   parser.addOption('port', abbr: 'p', defaultsTo: '4000');
@@ -38,6 +40,8 @@ main(List<String> args) async {
     metaStore: unpub.MongoStore(db),
     packageStore: unpub.FileStore(baseDir),
     upstream: upstream,
+    googleapisProxy: googleapisProxy,
+    overrideUploaderEmail: uploaderEmail,
     proxy_origin: proxy_origin.trim().isEmpty ? null : Uri.parse(proxy_origin),
   );
 
