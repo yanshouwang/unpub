@@ -7,11 +7,13 @@ import 'package:unpub/unpub.dart' as unpub;
 main(List<String> args) async {
   final environment = Platform.environment;
   final dbHost = environment['UNPUB_DB_HOST'] ?? 'localhost';
+  final dbPort = environment['UNPUB_DB_PORT'] ?? '27017';
+  final upstream = environment['UNPUB_UPSTREAM'] ?? 'https://pub.dev';
   var parser = ArgParser();
   parser.addOption('host', abbr: 'h', defaultsTo: '0.0.0.0');
   parser.addOption('port', abbr: 'p', defaultsTo: '4000');
   parser.addOption('database',
-      abbr: 'd', defaultsTo: 'mongodb://$dbHost:27017/dart_pub');
+      abbr: 'd', defaultsTo: 'mongodb://$dbHost:$dbPort/dart_pub');
   parser.addOption('proxy-origin', abbr: 'o', defaultsTo: '');
 
   var results = parser.parse(args);
@@ -33,10 +35,11 @@ main(List<String> args) async {
   var baseDir = path.absolute('unpub-packages');
 
   var app = unpub.App(
-      metaStore: unpub.MongoStore(db),
-      packageStore: unpub.FileStore(baseDir),
-      proxy_origin:
-          proxy_origin.trim().isEmpty ? null : Uri.parse(proxy_origin));
+    metaStore: unpub.MongoStore(db),
+    packageStore: unpub.FileStore(baseDir),
+    upstream: upstream,
+    proxy_origin: proxy_origin.trim().isEmpty ? null : Uri.parse(proxy_origin),
+  );
 
   var server = await app.serve(host, port);
   print('Serving at http://${server.address.host}:${server.port}');
