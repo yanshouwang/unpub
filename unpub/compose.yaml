@@ -8,6 +8,8 @@ services:
       - package_store:/app/unpub-packages
     environment:
       - UNPUB_DB_HOST=db
+      - UNPUB_DB_PORT=27017
+      - UNPUB_UPSTREAM=https://pub.dev
     depends_on:
       db:
         condition: service_healthy
