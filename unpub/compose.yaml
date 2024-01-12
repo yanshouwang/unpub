@@ -9,7 +9,7 @@ services:
     environment:
       - UNPUB_DB_HOST=db
       - UNPUB_DB_PORT=27017
-      - UNPUB_UPSTREAM=https://pub.dev
+      - UNPUB_UPSTREAM=https://pub.flutter-io.cn
       - UNPUB_PREFIX=unpub
     depends_on:
       db:
