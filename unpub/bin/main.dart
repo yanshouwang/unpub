@@ -11,7 +11,10 @@ main(List<String> args) async {
   final upstream = environment['UNPUB_UPSTREAM'] ?? 'https://pub.dev';
   final googleapisProxy = environment['UNPUB_GOOGLEAPIS_PROXY'];
   final uploaderEmail = environment['UNPUB_UPLOADER_EMAIL'];
-  var parser = ArgParser();
+  final prefix = environment['UNPUB_PREFIX'];
+
+  final parser = ArgParser();
+
   parser.addOption('host', abbr: 'h', defaultsTo: '0.0.0.0');
   parser.addOption('port', abbr: 'p', defaultsTo: '4000');
   parser.addOption('database',
@@ -42,6 +45,16 @@ main(List<String> args) async {
     upstream: upstream,
     googleapisProxy: googleapisProxy,
     overrideUploaderEmail: uploaderEmail,
+    uploadValidator: prefix == null
+        ? null
+        : (pubspec, uploaderEmail) async {
+            // Only allow packages with some specified prefixes to be uploaded
+            final name = pubspec['name'] as String;
+            final namePattern = '${prefix}_';
+            if (!name.startsWith(namePattern)) {
+              throw 'Package name should starts with $namePattern';
+            }
+          },
     proxy_origin: proxy_origin.trim().isEmpty ? null : Uri.parse(proxy_origin),
   );
 
